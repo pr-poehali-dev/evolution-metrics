@@ -13,16 +13,16 @@ export function VideoSection() {
           <div className="aspect-video">
             <iframe
               className="w-full h-full"
-              src="https://www.youtube.com/embed/NlMGpbDGCNk?rel=0&modestbranding=1"
+              src="https://rutube.ru/play/embed/be6cd6bb0a28d9155b8253fea3ebd5d8"
               title="Как правильно проводить СЛР"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allow="clipboard-write; autoplay"
               allowFullScreen
             />
           </div>
         </div>
 
         <p className="text-center text-gray-500 text-sm mt-4">
-          Видео: Российский Красный Крест — техника сердечно-лёгочной реанимации
+          Видео: техника сердечно-лёгочной реанимации (Rutube)
         </p>
       </div>
     </section>
