@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import { Button } from "@/components/ui/button"
+import { Slider } from "@/components/ui/slider"
 
-const BPM = 110
-const INTERVAL_MS = Math.round((60 / BPM) * 1000)
 const BREATHE_TOTAL_MS = 5000
 const BREATHE_SECOND_MS = 2500
+const BPM_MIN = 80
+const BPM_MAX = 140
+const BPM_DEFAULT = 110
 
 export function CprTimer() {
+  const [bpm, setBpm] = useState(BPM_DEFAULT)
   const [running, setRunning] = useState(false)
   const [count, setCount] = useState(0)
   const [cycles, setCycles] = useState(0)
@@ -58,11 +61,15 @@ export function CprTimer() {
     [getAudioCtx]
   )
 
+  const bpmRef = useRef(bpm)
+  useEffect(() => { bpmRef.current = bpm }, [bpm])
+
   const scheduleCompress = useCallback(
     (delay: number) => {
       if (!runningRef.current) return
       const t = setTimeout(() => {
         if (!runningRef.current) return
+        const intervalMs = Math.round((60 / bpmRef.current) * 1000)
         compressCountRef.current += 1
         const n = compressCountRef.current
         setCount(n)
@@ -92,7 +99,7 @@ export function CprTimer() {
           }, BREATHE_TOTAL_MS)
           timeoutsRef.current.push(t2)
         } else {
-          scheduleCompress(INTERVAL_MS)
+          scheduleCompress(intervalMs)
         }
       }, delay)
       timeoutsRef.current.push(t)
@@ -132,11 +139,34 @@ export function CprTimer() {
     <section id="timer" className="py-24 bg-black">
       <div className="max-w-2xl mx-auto px-6 text-center">
         <h2 className="text-3xl md:text-4xl font-bold text-white font-orbitron mb-4">Тренажёр ритма СЛР</h2>
-        <p className="text-gray-400 mb-12 text-lg">
-          Нажмите «Старт» — приложение задаёт правильный ритм 110 уд/мин.
+        <p className="text-gray-400 mb-8 text-lg">
+          Нажмите «Старт» — приложение задаёт ритм компрессий.
           <br />
           Каждые 30 компрессий — 5 секунд на два вдоха.
         </p>
+
+        <div className="mb-10 px-4">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-gray-400 text-sm">Темп</span>
+            <span className="text-white font-orbitron font-bold text-lg">
+              {bpm} <span className="text-red-400 text-sm">уд/мин</span>
+            </span>
+            <span className="text-gray-400 text-sm">Рекомендация ВОЗ: 100–120</span>
+          </div>
+          <Slider
+            min={BPM_MIN}
+            max={BPM_MAX}
+            step={1}
+            value={[bpm]}
+            onValueChange={([v]) => setBpm(v)}
+            disabled={running}
+            className="w-full"
+          />
+          <div className="flex justify-between text-gray-600 text-xs mt-1">
+            <span>{BPM_MIN}</span>
+            <span>{BPM_MAX}</span>
+          </div>
+        </div>
 
         <div className="relative flex items-center justify-center mb-10">
           <div
@@ -195,7 +225,7 @@ export function CprTimer() {
             <div className="text-gray-500 text-sm mt-1">циклов</div>
           </div>
           <div className="border border-white/10 rounded-sm p-4">
-            <div className="text-2xl font-bold text-white font-orbitron">{BPM}</div>
+            <div className="text-2xl font-bold text-white font-orbitron">{bpm}</div>
             <div className="text-gray-500 text-sm mt-1">уд/мин</div>
           </div>
         </div>
