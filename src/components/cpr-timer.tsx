@@ -2,118 +2,140 @@ import { useState, useEffect, useRef, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 
 const BPM = 110
-const INTERVAL_MS = (60 / BPM) * 1000
+const INTERVAL_MS = Math.round((60 / BPM) * 1000)
+const BREATHE_TOTAL_MS = 5000
+const BREATHE_SECOND_MS = 2500
 
 export function CprTimer() {
   const [running, setRunning] = useState(false)
   const [count, setCount] = useState(0)
+  const [cycles, setCycles] = useState(0)
   const [cycle, setCycle] = useState<"compress" | "breathe">("compress")
   const [breatheCountdown, setBreatheCountdown] = useState(0)
   const [beat, setBeat] = useState(false)
 
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const audioCtxRef = useRef<AudioContext | null>(null)
+  const runningRef = useRef(false)
   const compressCountRef = useRef(0)
+  const totalCyclesRef = useRef(0)
+  const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([])
+  const audioCtxRef = useRef<AudioContext | null>(null)
+
+  const clearAll = useCallback(() => {
+    timeoutsRef.current.forEach(clearTimeout)
+    timeoutsRef.current = []
+  }, [])
 
   const getAudioCtx = useCallback(() => {
     if (!audioCtxRef.current) {
-      audioCtxRef.current = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
+      audioCtxRef.current = new (window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
     }
     return audioCtxRef.current
   }, [])
 
-  const playClick = useCallback((type: "compress" | "breathe") => {
-    const ctx = getAudioCtx()
-    const osc = ctx.createOscillator()
-    const gain = ctx.createGain()
-    osc.connect(gain)
-    gain.connect(ctx.destination)
+  const playClick = useCallback(
+    (type: "compress" | "breathe") => {
+      const ctx = getAudioCtx()
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      if (type === "compress") {
+        osc.frequency.setValueAtTime(220, ctx.currentTime)
+        gain.gain.setValueAtTime(0.3, ctx.currentTime)
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08)
+        osc.start(ctx.currentTime)
+        osc.stop(ctx.currentTime + 0.08)
+      } else {
+        osc.frequency.setValueAtTime(660, ctx.currentTime)
+        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.15)
+        gain.gain.setValueAtTime(0.5, ctx.currentTime)
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4)
+        osc.start(ctx.currentTime)
+        osc.stop(ctx.currentTime + 0.4)
+      }
+    },
+    [getAudioCtx]
+  )
 
-    if (type === "compress") {
-      osc.frequency.setValueAtTime(220, ctx.currentTime)
-      gain.gain.setValueAtTime(0.3, ctx.currentTime)
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08)
-      osc.start(ctx.currentTime)
-      osc.stop(ctx.currentTime + 0.08)
-    } else {
-      osc.frequency.setValueAtTime(660, ctx.currentTime)
-      osc.frequency.setValueAtTime(880, ctx.currentTime + 0.15)
-      gain.gain.setValueAtTime(0.5, ctx.currentTime)
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4)
-      osc.start(ctx.currentTime)
-      osc.stop(ctx.currentTime + 0.4)
-    }
-  }, [getAudioCtx])
+  const scheduleCompress = useCallback(
+    (delay: number) => {
+      if (!runningRef.current) return
+      const t = setTimeout(() => {
+        if (!runningRef.current) return
+        compressCountRef.current += 1
+        const n = compressCountRef.current
+        setCount(n)
+        setBeat(true)
+        setTimeout(() => setBeat(false), 100)
+        playClick("compress")
+
+        if (n % 30 === 0) {
+          totalCyclesRef.current += 1
+          setCycles(totalCyclesRef.current)
+          setCycle("breathe")
+          setBreatheCountdown(2)
+          playClick("breathe")
+
+          const t1 = setTimeout(() => {
+            if (!runningRef.current) return
+            setBreatheCountdown(1)
+            playClick("breathe")
+          }, BREATHE_SECOND_MS)
+          timeoutsRef.current.push(t1)
+
+          const t2 = setTimeout(() => {
+            if (!runningRef.current) return
+            setBreatheCountdown(0)
+            setCycle("compress")
+            scheduleCompress(0)
+          }, BREATHE_TOTAL_MS)
+          timeoutsRef.current.push(t2)
+        } else {
+          scheduleCompress(INTERVAL_MS)
+        }
+      }, delay)
+      timeoutsRef.current.push(t)
+    },
+    [playClick]
+  )
 
   const start = useCallback(() => {
     getAudioCtx()
+    runningRef.current = true
     compressCountRef.current = 0
+    totalCyclesRef.current = 0
     setCount(0)
+    setCycles(0)
     setCycle("compress")
     setBreatheCountdown(0)
     setRunning(true)
-  }, [getAudioCtx])
+    scheduleCompress(0)
+  }, [getAudioCtx, scheduleCompress])
 
   const stop = useCallback(() => {
+    runningRef.current = false
+    clearAll()
     setRunning(false)
-    if (intervalRef.current) clearInterval(intervalRef.current)
-    compressCountRef.current = 0
     setCount(0)
+    setCycles(0)
     setCycle("compress")
     setBreatheCountdown(0)
-  }, [])
+    setBeat(false)
+  }, [clearAll])
 
-  useEffect(() => {
-    if (!running) {
-      if (intervalRef.current) clearInterval(intervalRef.current)
-      return
-    }
-
-    intervalRef.current = setInterval(() => {
-      compressCountRef.current += 1
-      const n = compressCountRef.current
-
-      setBeat(true)
-      setTimeout(() => setBeat(false), 100)
-
-      if (n % 30 === 0) {
-        playClick("breathe")
-        setCycle("breathe")
-        setBreatheCountdown(2)
-        const t1 = setTimeout(() => {
-          setBreatheCountdown(1)
-          playClick("breathe")
-        }, 1500)
-        const t2 = setTimeout(() => {
-          setBreatheCountdown(0)
-          setCycle("compress")
-        }, 3000)
-        setCount(n)
-        return () => { clearTimeout(t1); clearTimeout(t2) }
-      } else {
-        playClick("compress")
-        setCycle("compress")
-      }
-
-      setCount(n)
-    }, INTERVAL_MS)
-
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current)
-    }
-  }, [running, playClick])
+  useEffect(() => () => { runningRef.current = false; clearAll() }, [clearAll])
 
   const currentCompress = count % 30 === 0 && count > 0 ? 30 : count % 30
 
   return (
     <section id="timer" className="py-24 bg-black">
       <div className="max-w-2xl mx-auto px-6 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold text-white font-orbitron mb-4">
-          Тренажёр ритма СЛР
-        </h2>
+        <h2 className="text-3xl md:text-4xl font-bold text-white font-orbitron mb-4">Тренажёр ритма СЛР</h2>
         <p className="text-gray-400 mb-12 text-lg">
-          Нажмите «Старт» — приложение задаёт правильный ритм 110 уд/мин.<br />
-          Каждые 30 компрессий — звуковой сигнал для двух вдохов.
+          Нажмите «Старт» — приложение задаёт правильный ритм 110 уд/мин.
+          <br />
+          Каждые 30 компрессий — 5 секунд на два вдоха.
         </p>
 
         <div className="relative flex items-center justify-center mb-10">
@@ -122,8 +144,8 @@ export function CprTimer() {
               cycle === "breathe"
                 ? "border-blue-400 bg-blue-500/10 shadow-[0_0_40px_rgba(96,165,250,0.4)]"
                 : beat && running
-                ? "border-red-400 bg-red-500/20 scale-105 shadow-[0_0_40px_rgba(220,38,38,0.5)]"
-                : "border-red-500/40 bg-red-500/5"
+                  ? "border-red-400 bg-red-500/20 scale-105 shadow-[0_0_40px_rgba(220,38,38,0.5)]"
+                  : "border-red-500/40 bg-red-500/5"
             }`}
           >
             {!running ? (
@@ -169,7 +191,7 @@ export function CprTimer() {
             <div className="text-gray-500 text-sm mt-1">компрессий</div>
           </div>
           <div className="border border-white/10 rounded-sm p-4">
-            <div className="text-2xl font-bold text-white font-orbitron">{Math.floor(count / 30)}</div>
+            <div className="text-2xl font-bold text-white font-orbitron">{cycles}</div>
             <div className="text-gray-500 text-sm mt-1">циклов</div>
           </div>
           <div className="border border-white/10 rounded-sm p-4">
