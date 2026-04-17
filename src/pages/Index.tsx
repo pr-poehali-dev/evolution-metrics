@@ -6,6 +6,7 @@ import { AboutSection } from "@/components/about-section"
 import { SafetySection } from "@/components/safety-section"
 import { FAQSection } from "@/components/faq-section"
 import { StatsSection } from "@/components/stats-section"
+import { CprTimer } from "@/components/cpr-timer"
 import { CTASection } from "@/components/cta-section"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
@@ -22,6 +23,7 @@ export default function Index() {
           <TechnologySection />
         </section>
         <ApplicationsTimeline />
+        <CprTimer />
         <AboutSection />
         <section id="safety">
           <SafetySection />
