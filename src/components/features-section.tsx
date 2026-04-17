@@ -3,40 +3,40 @@ import { Badge } from "@/components/ui/badge"
 
 const features = [
   {
-    title: "Адаптивная нейрообработка",
-    description: "Самооптимизирующиеся алгоритмы, которые обучаются на нейронных паттернах и улучшают интерпретацию сигналов.",
-    icon: "brain",
-    badge: "ИИ",
+    title: "Пошаговые инструкции",
+    description: "Чёткий алгоритм действий с визуальными подсказками — от оценки состояния пострадавшего до прибытия скорой.",
+    icon: "list",
+    badge: "Понятно",
   },
   {
-    title: "Медицинская защита",
-    description: "Шифрование по стандартам FDA со сквозной защитой конфиденциальных нейронных данных.",
-    icon: "lock",
-    badge: "Сертификат",
+    title: "Голосовое управление",
+    description: "Руки заняты — голосовой ассистент ведёт вас через каждый шаг СЛР, не отвлекая от пострадавшего.",
+    icon: "mic",
+    badge: "Свободные руки",
   },
   {
-    title: "Интуитивное управление",
-    description: "Естественная трансляция мыслей в действия с откликом менее миллисекунды и точностью 99,7%.",
-    icon: "globe",
-    badge: "Точность",
+    title: "Ритм компрессий",
+    description: "Встроенный метроном задаёт правильный темп — 100–120 нажатий в минуту, как рекомендует ВОЗ.",
+    icon: "heart",
+    badge: "Точно",
   },
   {
-    title: "Предиктивная калибровка",
-    description: "ML-модели, которые предугадывают намерения пользователя и оптимизируют нейронные пути.",
-    icon: "zap",
-    badge: "Умный",
+    title: "Вызов экстренных служб",
+    description: "Одна кнопка — и 112 уже в курсе. Приложение автоматически передаёт ваше местоположение.",
+    icon: "phone",
+    badge: "112",
   },
   {
-    title: "Биометрическая интеграция",
-    description: "Бесшовная синхронизация с мониторингом жизненных показателей для контроля здоровья.",
-    icon: "link",
-    badge: "Связь",
+    title: "Обучающий режим",
+    description: "Отработайте навыки заранее с интерактивными симуляциями — чтобы в реальной ситуации действовать уверенно.",
+    icon: "book",
+    badge: "Тренировка",
   },
   {
-    title: "Поддержка XR",
-    description: "Нативная совместимость с AR/VR-средами для терапевтических и рабочих приложений.",
-    icon: "target",
-    badge: "XR Ready",
+    title: "Работает офлайн",
+    description: "Нет интернета? Не страшно. Всё необходимое загружено на устройство и доступно в любой момент.",
+    icon: "wifi",
+    badge: "Всегда готов",
   },
 ]
 
@@ -45,9 +45,9 @@ export function FeaturesSection() {
     <section className="py-24 px-6 bg-background">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-foreground mb-4 font-sans">Возможности нового поколения</h2>
+          <h2 className="text-4xl font-bold text-foreground mb-4 font-sans">Всё необходимое в критический момент</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Почувствуйте будущее с технологиями, которые переопределяют возможное
+            Приложение, которое превращает любого человека в первого помощника — без медицинского образования
           </p>
         </div>
 
@@ -61,12 +61,12 @@ export function FeaturesSection() {
               <CardHeader>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-3xl">
-                    {feature.icon === "brain" && "&#129504;"}
-                    {feature.icon === "lock" && "&#128274;"}
-                    {feature.icon === "globe" && "&#127760;"}
-                    {feature.icon === "zap" && "&#9889;"}
-                    {feature.icon === "link" && "&#128279;"}
-                    {feature.icon === "target" && "&#127919;"}
+                    {feature.icon === "list" && "📋"}
+                    {feature.icon === "mic" && "🎙️"}
+                    {feature.icon === "heart" && "❤️"}
+                    {feature.icon === "phone" && "📞"}
+                    {feature.icon === "book" && "📖"}
+                    {feature.icon === "wifi" && "📡"}
                   </span>
                   <Badge variant="secondary" className="bg-accent text-accent-foreground">
                     {feature.badge}

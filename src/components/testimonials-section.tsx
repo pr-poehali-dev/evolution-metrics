@@ -3,25 +3,25 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 const testimonials = [
   {
-    name: "Елена Родригес",
-    role: "Директор по нейронауке, Quantum Dynamics",
-    avatar: "/professional-woman-scientist.png",
-    content:
-      "SynapseAI изменил наш подход к нейрореабилитации. Результаты пациентов улучшились на 340% после внедрения.",
-  },
-  {
-    name: "Маркус Уильямс",
-    role: "Руководитель исследований, Stellar Analytics",
+    name: "Алексей Морозов",
+    role: "Обычный прохожий, Москва",
     avatar: "/cybersecurity-expert-man.jpg",
     content:
-      "Точность и протоколы безопасности не имеют аналогов. Мы значительно ускорили клинические испытания с платформой SynapseAI.",
+      "Мой коллега потерял сознание прямо в офисе. Я открыл приложение — и оно буквально вело меня за руку. Скорая сказала, что я всё сделал правильно.",
   },
   {
-    name: "Анна Ковальски",
-    role: "Вице-президент по разработке, Nova Industries",
+    name: "Мария Соколова",
+    role: "Учитель, Санкт-Петербург",
+    avatar: "/professional-woman-scientist.png",
+    content:
+      "Прошла обучающий режим за вечер. Теперь уверена, что смогу помочь, если что-то случится с учеником или коллегой. Это должно быть в каждом телефоне.",
+  },
+  {
+    name: "Дина Ли",
+    role: "Студентка медицинского вуза",
     avatar: "/asian-woman-tech-developer.jpg",
     content:
-      "Интеграция прошла безупречно. Адаптивные алгоритмы понимают намерения пользователя лучше любой системы, что мы тестировали.",
+      "Рекомендую всем знакомым без медицинского образования. Интерфейс понятный, инструкции точные. В критической ситуации это реально работает.",
   },
 ]
 
@@ -30,9 +30,9 @@ export function TestimonialsSection() {
     <section className="py-24 px-6 bg-card">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-card-foreground mb-4 font-sans">Нам доверяют лидеры</h2>
+          <h2 className="text-4xl font-bold text-card-foreground mb-4 font-sans">Реальные истории</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Что говорят лидеры индустрии о нашей революционной технологии
+            Люди без медицинского образования, которые смогли помочь в критический момент
           </p>
         </div>
 
