@@ -100,7 +100,7 @@ export const Hero3DWebGL = () => {
 
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
 
-      <div className="h-screen uppercase items-center w-full absolute z-[60] pointer-events-none px-10 flex justify-center flex-col">
+      <div className="h-screen uppercase items-center w-full absolute z-[60] px-10 flex justify-center flex-col">
         <div className="text-3xl md:text-5xl xl:text-6xl 2xl:text-7xl font-extrabold font-orbitron">
           <div className="flex space-x-2 lg:space-x-6 overflow-hidden text-white">
             {titleWords.map((word, index) => (
@@ -127,6 +127,19 @@ export const Hero3DWebGL = () => {
           >
             {subtitle}
           </div>
+        </div>
+        <div
+          className={subtitleVisible ? "fade-in-subtitle mt-10" : "mt-10"}
+          style={{
+            opacity: subtitleVisible ? undefined : 0,
+          }}
+        >
+          <a
+            href="#applications"
+            className="inline-block normal-case bg-red-500 hover:bg-red-600 text-white font-bold text-lg px-10 py-4 rounded-sm transition-colors duration-200 pulse-button"
+          >
+            Начать СЛР
+          </a>
         </div>
       </div>
     </div>
